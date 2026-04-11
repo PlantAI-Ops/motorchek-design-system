@@ -22,7 +22,7 @@ export default function SpecDetailPage() {
 
   if (!spec) {
     return (
-      <AppLayout>
+      <AppLayout title="Spec Not Found">
         <div className="p-6">
           <Button variant="ghost" size="sm" onClick={() => navigate("/specs")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back to Specs
@@ -36,7 +36,7 @@ export default function SpecDetailPage() {
   const linkedMotors = MOCK_MOTORS.filter((m) => spec.linkedMotorIds.includes(m.id));
 
   return (
-    <AppLayout>
+    <AppLayout title={`${spec.manufacturer} / ${spec.model}`}>
       <div className="p-6 space-y-6">
         <Button variant="ghost" size="sm" onClick={() => navigate("/specs")}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Back to Specs

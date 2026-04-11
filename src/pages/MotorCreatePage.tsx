@@ -42,7 +42,7 @@ export default function MotorCreatePage() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout title="Add New Motor">
       <div className="p-6 max-w-[560px] mx-auto">
         <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate("/motors")}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Back to Motors

@@ -29,7 +29,7 @@ export default function SpecListPage() {
   }, [debouncedManufacturer, debouncedModel]);
 
   return (
-    <AppLayout>
+    <AppLayout title="Specs">
       <div className="p-6 space-y-6">
         <h1 className="text-2xl font-bold text-foreground">Specs</h1>
 

@@ -10,6 +10,9 @@ import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import MotorListPage from "./pages/MotorListPage.tsx";
 import MotorDetailPage from "./pages/MotorDetailPage.tsx";
+import MotorCreatePage from "./pages/MotorCreatePage.tsx";
+import SpecListPage from "./pages/SpecListPage.tsx";
+import SpecDetailPage from "./pages/SpecDetailPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,7 +29,10 @@ const App = () => (
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/motors" element={<ProtectedRoute><MotorListPage /></ProtectedRoute>} />
+              <Route path="/motors/new" element={<ProtectedRoute allowedRoles={["admin"]}><MotorCreatePage /></ProtectedRoute>} />
               <Route path="/motors/:id" element={<ProtectedRoute><MotorDetailPage /></ProtectedRoute>} />
+              <Route path="/specs" element={<ProtectedRoute><SpecListPage /></ProtectedRoute>} />
+              <Route path="/specs/:id" element={<ProtectedRoute><SpecDetailPage /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
