@@ -8,6 +8,8 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
+import MotorListPage from "./pages/MotorListPage.tsx";
+import MotorDetailPage from "./pages/MotorDetailPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
