@@ -13,6 +13,11 @@ import MotorDetailPage from "./pages/MotorDetailPage.tsx";
 import MotorCreatePage from "./pages/MotorCreatePage.tsx";
 import SpecListPage from "./pages/SpecListPage.tsx";
 import SpecDetailPage from "./pages/SpecDetailPage.tsx";
+import InspectionHistoryPage from "./pages/InspectionHistoryPage.tsx";
+import NewInspectionPage from "./pages/NewInspectionPage.tsx";
+import DocumentListPage from "./pages/DocumentListPage.tsx";
+import DocumentUploadPage from "./pages/DocumentUploadPage.tsx";
+import AnalysisResultPage from "./pages/AnalysisResultPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -33,6 +38,11 @@ const App = () => (
               <Route path="/motors/:id" element={<ProtectedRoute><MotorDetailPage /></ProtectedRoute>} />
               <Route path="/specs" element={<ProtectedRoute><SpecListPage /></ProtectedRoute>} />
               <Route path="/specs/:id" element={<ProtectedRoute><SpecDetailPage /></ProtectedRoute>} />
+              <Route path="/inspections/:motorId" element={<ProtectedRoute><InspectionHistoryPage /></ProtectedRoute>} />
+              <Route path="/inspections/:motorId/new" element={<ProtectedRoute><NewInspectionPage /></ProtectedRoute>} />
+              <Route path="/documents" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentListPage /></ProtectedRoute>} />
+              <Route path="/documents/upload" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentUploadPage /></ProtectedRoute>} />
+              <Route path="/analysis/:motorId" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
