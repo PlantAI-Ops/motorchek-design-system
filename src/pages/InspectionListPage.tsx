@@ -78,7 +78,7 @@ export default function InspectionListPage() {
       {/* Table */}
       {filtered.length === 0 ? (
         <EmptyState
-          icon={ClipboardList}
+          icon={<ClipboardList className="w-5 h-5" />}
           title="No inspections found"
           description="Adjust your filters or log a new inspection from a motor's detail page."
         />

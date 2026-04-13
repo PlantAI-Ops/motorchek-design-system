@@ -13,6 +13,7 @@ import MotorDetailPage from "./pages/MotorDetailPage.tsx";
 import MotorCreatePage from "./pages/MotorCreatePage.tsx";
 import SpecListPage from "./pages/SpecListPage.tsx";
 import SpecDetailPage from "./pages/SpecDetailPage.tsx";
+import InspectionListPage from "./pages/InspectionListPage.tsx";
 import InspectionHistoryPage from "./pages/InspectionHistoryPage.tsx";
 import NewInspectionPage from "./pages/NewInspectionPage.tsx";
 import DocumentListPage from "./pages/DocumentListPage.tsx";
