@@ -39,6 +39,7 @@ const App = () => (
               <Route path="/motors/:id" element={<ProtectedRoute><MotorDetailPage /></ProtectedRoute>} />
               <Route path="/specs" element={<ProtectedRoute><SpecListPage /></ProtectedRoute>} />
               <Route path="/specs/:id" element={<ProtectedRoute><SpecDetailPage /></ProtectedRoute>} />
+              <Route path="/inspections" element={<ProtectedRoute><InspectionListPage /></ProtectedRoute>} />
               <Route path="/inspections/:motorId" element={<ProtectedRoute><InspectionHistoryPage /></ProtectedRoute>} />
               <Route path="/inspections/:motorId/new" element={<ProtectedRoute><NewInspectionPage /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentListPage /></ProtectedRoute>} />
