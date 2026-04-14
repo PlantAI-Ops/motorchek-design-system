@@ -49,6 +49,8 @@ const App = () => (
               <Route path="/documents/upload" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentUploadPage /></ProtectedRoute>} />
               <Route path="/analysis" element={<ProtectedRoute><AnalysisListPage /></ProtectedRoute>} />
               <Route path="/analysis/:motorId" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
+              <Route path="/audit" element={<ProtectedRoute allowedRoles={["admin"]}><AuditLogPage /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
