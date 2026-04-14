@@ -18,6 +18,7 @@ import InspectionHistoryPage from "./pages/InspectionHistoryPage.tsx";
 import NewInspectionPage from "./pages/NewInspectionPage.tsx";
 import DocumentListPage from "./pages/DocumentListPage.tsx";
 import DocumentUploadPage from "./pages/DocumentUploadPage.tsx";
+import AnalysisListPage from "./pages/AnalysisListPage.tsx";
 import AnalysisResultPage from "./pages/AnalysisResultPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
