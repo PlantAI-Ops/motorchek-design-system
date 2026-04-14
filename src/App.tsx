@@ -18,6 +18,7 @@ import InspectionHistoryPage from "./pages/InspectionHistoryPage.tsx";
 import NewInspectionPage from "./pages/NewInspectionPage.tsx";
 import DocumentListPage from "./pages/DocumentListPage.tsx";
 import DocumentUploadPage from "./pages/DocumentUploadPage.tsx";
+import AnalysisListPage from "./pages/AnalysisListPage.tsx";
 import AnalysisResultPage from "./pages/AnalysisResultPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/inspections/:motorId/new" element={<ProtectedRoute><NewInspectionPage /></ProtectedRoute>} />
               <Route path="/documents" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentListPage /></ProtectedRoute>} />
               <Route path="/documents/upload" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentUploadPage /></ProtectedRoute>} />
+              <Route path="/analysis" element={<ProtectedRoute><AnalysisListPage /></ProtectedRoute>} />
               <Route path="/analysis/:motorId" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
