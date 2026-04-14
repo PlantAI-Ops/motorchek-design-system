@@ -20,6 +20,8 @@ import DocumentListPage from "./pages/DocumentListPage.tsx";
 import DocumentUploadPage from "./pages/DocumentUploadPage.tsx";
 import AnalysisListPage from "./pages/AnalysisListPage.tsx";
 import AnalysisResultPage from "./pages/AnalysisResultPage.tsx";
+import AuditLogPage from "./pages/AuditLogPage.tsx";
+import SettingsPage from "./pages/SettingsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -47,6 +49,8 @@ const App = () => (
               <Route path="/documents/upload" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><DocumentUploadPage /></ProtectedRoute>} />
               <Route path="/analysis" element={<ProtectedRoute><AnalysisListPage /></ProtectedRoute>} />
               <Route path="/analysis/:motorId" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
+              <Route path="/audit" element={<ProtectedRoute allowedRoles={["admin"]}><AuditLogPage /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
