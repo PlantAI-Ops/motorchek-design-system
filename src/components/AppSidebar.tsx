@@ -47,8 +47,11 @@ const navSections = [
     minRole: "admin" as const,
     items: [
       { title: "Audit Log", path: "/audit", icon: ScrollText },
-      { title: "Settings", path: "/settings", icon: Settings },
     ],
+  },
+  {
+    label: "Account",
+    items: [{ title: "Settings", path: "/settings", icon: Settings }],
   },
 ];
 
