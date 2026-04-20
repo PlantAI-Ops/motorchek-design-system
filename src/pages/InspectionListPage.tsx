@@ -15,6 +15,7 @@ export default function InspectionListPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [motorFilter, setMotorFilter] = useState<string>("all");
+  const [timeFilter, setTimeFilter] = useState<string>("all");
   const debouncedSearch = useDebounce(search, 250);
 
   const motorsMap = useMemo(() => {
@@ -24,10 +25,21 @@ export default function InspectionListPage() {
   }, []);
 
   const filtered = useMemo(() => {
+    const now = Date.now();
+    const windows: Record<string, number> = {
+      "24h": 24 * 60 * 60 * 1000,
+      "7d": 7 * 24 * 60 * 60 * 1000,
+      "30d": 30 * 24 * 60 * 60 * 1000,
+      "90d": 90 * 24 * 60 * 60 * 1000,
+    };
     return MOCK_INSPECTIONS.filter((insp) => {
       const motor = motorsMap[insp.motorId];
       if (statusFilter !== "all" && insp.status !== statusFilter) return false;
       if (motorFilter !== "all" && insp.motorId !== motorFilter) return false;
+      if (timeFilter !== "all") {
+        const win = windows[timeFilter];
+        if (win && now - new Date(insp.timestamp).getTime() > win) return false;
+      }
       if (debouncedSearch) {
         const q = debouncedSearch.toLowerCase();
         const motorName = motor?.name.toLowerCase() ?? "";
@@ -36,7 +48,7 @@ export default function InspectionListPage() {
       }
       return true;
     }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [debouncedSearch, statusFilter, motorFilter, motorsMap]);
+  }, [debouncedSearch, statusFilter, motorFilter, timeFilter, motorsMap]);
 
   return (
     <AppLayout title="Inspections">
@@ -71,6 +83,18 @@ export default function InspectionListPage() {
             <SelectItem value="healthy">Healthy</SelectItem>
             <SelectItem value="warning">Warning</SelectItem>
             <SelectItem value="critical">Critical</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={timeFilter} onValueChange={setTimeFilter}>
+          <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectValue placeholder="All Time" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="24h">Last 24 hours</SelectItem>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="90d">Last 90 days</SelectItem>
           </SelectContent>
         </Select>
       </div>

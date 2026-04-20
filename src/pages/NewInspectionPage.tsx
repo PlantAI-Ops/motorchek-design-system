@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Info, Brain } from "lucide-react";
+import { ArrowLeft, Info, Brain, Upload, X, ImageIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { MOCK_MOTORS } from "@/data/mockMotors";
@@ -21,6 +22,7 @@ const inspectionSchema = z.object({
   vibration: z.coerce.number().min(0).max(10, "Max 10 mm/s"),
   noise: z.string().min(1, "Required"),
   condition: z.string().min(1, "Required"),
+  observations: z.string().max(1000, "Max 1000 characters").optional(),
 });
 
 type InspectionFormValues = z.infer<typeof inspectionSchema>;
@@ -52,6 +54,8 @@ export default function NewInspectionPage() {
   const navigate = useNavigate();
   const [ruleResult, setRuleResult] = useState<{ score: number; status: StatusVariant } | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [images, setImages] = useState<{ url: string; name: string }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const motor = MOCK_MOTORS.find((m) => m.id === motorId);
   const spec = motor?.specName
@@ -60,7 +64,7 @@ export default function NewInspectionPage() {
 
   const form = useForm<InspectionFormValues>({
     resolver: zodResolver(inspectionSchema),
-    defaultValues: { temperature: undefined as any, vibration: undefined as any, noise: "", condition: "" },
+    defaultValues: { temperature: undefined as any, vibration: undefined as any, noise: "", condition: "", observations: "" },
   });
 
   if (!motor) {
@@ -77,12 +81,38 @@ export default function NewInspectionPage() {
     const result = computeRuleResult(values, spec);
     setRuleResult(result);
 
-    toast.success("Inspection logged successfully");
+    toast.success("Inspection logged successfully", {
+      description: images.length > 0 ? `${images.length} image(s) attached` : undefined,
+    });
     if (analyze) {
       setShowAnalysis(true);
     } else {
       setTimeout(() => navigate(`/motors/${motor.id}`), 800);
     }
+  };
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    const next: { url: string; name: string }[] = [];
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} is not an image`);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} exceeds 5MB`);
+        return;
+      }
+      next.push({ url: URL.createObjectURL(file), name: file.name });
+    });
+    setImages((prev) => [...prev, ...next].slice(0, 6));
+  };
+
+  const removeImage = (idx: number) => {
+    setImages((prev) => {
+      URL.revokeObjectURL(prev[idx].url);
+      return prev.filter((_, i) => i !== idx);
+    });
   };
 
   return (
