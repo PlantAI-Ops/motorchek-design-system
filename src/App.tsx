@@ -13,6 +13,7 @@ import MotorDetailPage from "./pages/MotorDetailPage.tsx";
 import MotorCreatePage from "./pages/MotorCreatePage.tsx";
 import SpecListPage from "./pages/SpecListPage.tsx";
 import SpecDetailPage from "./pages/SpecDetailPage.tsx";
+import SpecCreatePage from "./pages/SpecCreatePage.tsx";
 import InspectionListPage from "./pages/InspectionListPage.tsx";
 import InspectionHistoryPage from "./pages/InspectionHistoryPage.tsx";
 import NewInspectionPage from "./pages/NewInspectionPage.tsx";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/motors/new" element={<ProtectedRoute allowedRoles={["admin"]}><MotorCreatePage /></ProtectedRoute>} />
               <Route path="/motors/:id" element={<ProtectedRoute><MotorDetailPage /></ProtectedRoute>} />
               <Route path="/specs" element={<ProtectedRoute><SpecListPage /></ProtectedRoute>} />
+              <Route path="/specs/new" element={<ProtectedRoute allowedRoles={["admin", "supervisor"]}><SpecCreatePage /></ProtectedRoute>} />
               <Route path="/specs/:id" element={<ProtectedRoute><SpecDetailPage /></ProtectedRoute>} />
               <Route path="/inspections" element={<ProtectedRoute><InspectionListPage /></ProtectedRoute>} />
               <Route path="/inspections/:motorId" element={<ProtectedRoute><InspectionHistoryPage /></ProtectedRoute>} />
