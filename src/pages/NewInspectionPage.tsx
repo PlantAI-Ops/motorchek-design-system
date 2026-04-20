@@ -231,6 +231,64 @@ export default function NewInspectionPage() {
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="observations"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Other Observations <span className="text-muted-foreground text-xs font-normal">(optional)</span></FormLabel>
+                      <FormControl>
+                        <Textarea
+                          rows={3}
+                          placeholder="Unusual smells, sounds, leaks, recent maintenance, etc."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>Free-form notes that don't fit the structured fields.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormItem>
+                  <FormLabel>Photos <span className="text-muted-foreground text-xs font-normal">(optional, up to 6)</span></FormLabel>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }}
+                  />
+                  <div
+                    className="border-2 border-dashed border-border rounded-md p-4 text-center cursor-pointer hover:bg-accent-subtle transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
+                  >
+                    <Upload className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-foreground">Click or drag images here</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB each</p>
+                  </div>
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-3">
+                      {images.map((img, i) => (
+                        <div key={i} className="relative group rounded-md overflow-hidden border border-border bg-muted">
+                          <img src={img.url} alt={img.name} className="w-full h-24 object-cover" />
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeImage(i); }}
+                            className="absolute top-1 right-1 bg-background/80 hover:bg-background rounded-full p-1 shadow-sm"
+                            aria-label={`Remove ${img.name}`}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </FormItem>
+
                 <div className="flex gap-3 pt-2">
                   <Button
                     type="button"
