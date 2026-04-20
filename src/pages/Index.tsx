@@ -3,6 +3,8 @@ import { KpiCard } from "@/components/KpiCard";
 import { MotorCard } from "@/components/MotorCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Cpu, CheckCircle, Wrench, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MOCK_MOTORS } from "@/data/mockMotors";
 
 const mockMotors = [
   { name: "Pump Motor A1", facility: "FAC-001", machine: "MCH-042", status: "healthy" as const, specName: "ABB M3BP-160", lastInspection: "2h ago", score: 92 },
@@ -22,6 +24,7 @@ const recentInspections = [
 ];
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   return (
     <AppLayout title="Dashboard">
       {/* KPI Cards */}
@@ -96,10 +99,20 @@ export default function DashboardPage() {
       <section>
         <h2 className="text-lg font-semibold text-foreground mb-4">Motors Requiring Attention</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {mockMotors
+          {MOCK_MOTORS
             .filter((m) => m.status === "warning" || m.status === "critical")
             .map((motor) => (
-              <MotorCard key={motor.name} {...motor} />
+              <MotorCard
+                key={motor.id}
+                name={motor.name}
+                facility={motor.facility}
+                machine={motor.machine}
+                status={motor.status}
+                specName={motor.specName}
+                lastInspection={motor.lastInspection}
+                score={motor.score}
+                onClick={() => navigate(`/motors/${motor.id}`)}
+              />
             ))}
         </div>
       </section>
