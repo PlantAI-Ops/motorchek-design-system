@@ -1,0 +1,1967 @@
+{
+"openapi": "3.1.0",
+"info": {
+"title": "MotorChek API",
+"description": "PlantOps motor inspection and predictive maintenance system",
+"version": "1.0.0"
+},
+"paths": {
+"/auth/login": {
+"post": {
+"tags": [
+"auth"
+],
+"summary": "Login",
+"operationId": "login_auth_login_post",
+"requestBody": {
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/LoginRequest"
+}
+}
+},
+"required": true
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/Token"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/motors": {
+"post": {
+"tags": [
+"motors"
+],
+"summary": "Create Motor Route",
+"operationId": "create_motor_route_motors_post",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"requestBody": {
+"required": true,
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorCreate"
+}
+}
+}
+},
+"responses": {
+"201": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+},
+"get": {
+"tags": [
+"motors"
+],
+"summary": "List Motors Route",
+"operationId": "list_motors_route_motors_get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "skip",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 0,
+"title": "Skip"
+}
+},
+{
+"name": "limit",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 20,
+"title": "Limit"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/MotorOut"
+},
+"title": "Response List Motors Route Motors Get"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/motors/{motor_id}": {
+"get": {
+"tags": [
+"motors"
+],
+"summary": "Get Motor Route",
+"operationId": "get_motor_route_motors__motor_id__get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "motor_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Motor Id"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+},
+"put": {
+"tags": [
+"motors"
+],
+"summary": "Update Motor Route",
+"operationId": "update_motor_route_motors__motor_id__put",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "motor_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Motor Id"
+}
+}
+],
+"requestBody": {
+"required": true,
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorUpdate"
+}
+}
+}
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+},
+"delete": {
+"tags": [
+"motors"
+],
+"summary": "Delete Motor Route",
+"operationId": "delete_motor_route_motors__motor_id__delete",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "motor_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Motor Id"
+}
+}
+],
+"responses": {
+"204": {
+"description": "Successful Response"
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/motors/{motor_id}/assign-spec": {
+"post": {
+"tags": [
+"motors"
+],
+"summary": "Assign Spec Route",
+"operationId": "assign_spec_route_motors__motor_id__assign_spec_post",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "motor_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Motor Id"
+}
+}
+],
+"requestBody": {
+"required": true,
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/AssignSpecRequest"
+}
+}
+}
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/specs": {
+"post": {
+"tags": [
+"specs"
+],
+"summary": "Create Spec Route",
+"operationId": "create_spec_route_specs_post",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"requestBody": {
+"required": true,
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorSpecCreate"
+}
+}
+}
+},
+"responses": {
+"201": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorSpecOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+},
+"get": {
+"tags": [
+"specs"
+],
+"summary": "List Specs Route",
+"operationId": "list_specs_route_specs_get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "manufacturer",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Manufacturer"
+}
+},
+{
+"name": "model",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Model"
+}
+},
+{
+"name": "limit",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 20,
+"title": "Limit"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/MotorSpecOut"
+},
+"title": "Response List Specs Route Specs Get"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/specs/{spec_id}": {
+"get": {
+"tags": [
+"specs"
+],
+"summary": "Get Spec Route",
+"operationId": "get_spec_route_specs__spec_id__get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "spec_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Spec Id"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/MotorSpecOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/inspections": {
+"post": {
+"tags": [
+"inspections"
+],
+"summary": "Create Inspection Route",
+"operationId": "create_inspection_route_inspections_post",
+"requestBody": {
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/InspectionCreate"
+}
+}
+},
+"required": true
+},
+"responses": {
+"201": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/InspectionOut"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+},
+"security": [
+{
+"HTTPBearer": []
+}
+]
+}
+},
+"/inspections/{motor_id}": {
+"get": {
+"tags": [
+"inspections"
+],
+"summary": "Get Inspections Route",
+"operationId": "get_inspections_route_inspections__motor_id__get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "motor_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Motor Id"
+}
+},
+{
+"name": "limit",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 20,
+"title": "Limit"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/InspectionOut"
+},
+"title": "Response Get Inspections Route Inspections  Motor Id  Get"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/ai/analyze": {
+"post": {
+"tags": [
+"ai"
+],
+"summary": "Analyze Route",
+"operationId": "analyze_route_ai_analyze_post",
+"requestBody": {
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/AnalyzeRequest"
+}
+}
+},
+"required": true
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/AnalyzeResponse"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+},
+"security": [
+{
+"HTTPBearer": []
+}
+]
+}
+},
+"/documents/upload": {
+"post": {
+"tags": [
+"documents"
+],
+"summary": "Upload Route",
+"operationId": "upload_route_documents_upload_post",
+"requestBody": {
+"content": {
+"multipart/form-data": {
+"schema": {
+"$ref": "#/components/schemas/Body_upload_route_documents_upload_post"
+}
+}
+},
+"required": true
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/DocumentUploadResponse"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+},
+"security": [
+{
+"HTTPBearer": []
+}
+]
+}
+},
+"/documents/{doc_id}": {
+"get": {
+"tags": [
+"documents"
+],
+"summary": "Get Document Route",
+"operationId": "get_document_route_documents__doc_id__get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "doc_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Doc Id"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/documents/{doc_id}/metadata": {
+"patch": {
+"tags": [
+"documents"
+],
+"summary": "Update Metadata Route",
+"operationId": "update_metadata_route_documents__doc_id__metadata_patch",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "doc_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Doc Id"
+}
+}
+],
+"requestBody": {
+"required": true,
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/DocumentMetadataUpdate"
+}
+}
+}
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"type": "object",
+"additionalProperties": true,
+"title": "Response Update Metadata Route Documents  Doc Id  Metadata Patch"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/documents/parse": {
+"post": {
+"tags": [
+"documents"
+],
+"summary": "Parse Spec Route",
+"operationId": "parse_spec_route_documents_parse_post",
+"requestBody": {
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/SpecParseRequest"
+}
+}
+},
+"required": true
+},
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/SpecParseResponse"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+},
+"security": [
+{
+"HTTPBearer": []
+}
+]
+}
+},
+"/documents/chunks/{doc_id}": {
+"delete": {
+"tags": [
+"documents"
+],
+"summary": "Delete Doc Chunks",
+"operationId": "delete_doc_chunks_documents_chunks__doc_id__delete",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "doc_id",
+"in": "path",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Doc Id"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/documents/chunks": {
+"get": {
+"tags": [
+"documents"
+],
+"summary": "Search Chunks",
+"operationId": "search_chunks_documents_chunks_get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "q",
+"in": "query",
+"required": true,
+"schema": {
+"type": "string",
+"title": "Q"
+}
+},
+{
+"name": "manufacturer",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Manufacturer"
+}
+},
+{
+"name": "model",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Model"
+}
+},
+{
+"name": "top_k",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 5,
+"title": "Top K"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/audit_logs": {
+"get": {
+"tags": [
+"audit"
+],
+"summary": "List Audit Logs Route",
+"operationId": "list_audit_logs_route_audit_logs_get",
+"security": [
+{
+"HTTPBearer": []
+}
+],
+"parameters": [
+{
+"name": "resource_type",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Resource Type"
+}
+},
+{
+"name": "user_id",
+"in": "query",
+"required": false,
+"schema": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "User Id"
+}
+},
+{
+"name": "limit",
+"in": "query",
+"required": false,
+"schema": {
+"type": "integer",
+"default": 100,
+"title": "Limit"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/AuditLogOut"
+},
+"title": "Response List Audit Logs Route Audit Logs Get"
+}
+}
+}
+},
+"422": {
+"description": "Validation Error",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/HTTPValidationError"
+}
+}
+}
+}
+}
+}
+},
+"/": {
+"get": {
+"tags": [
+"root"
+],
+"summary": "Root",
+"operationId": "root__get",
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+}
+}
+}
+},
+"/health": {
+"get": {
+"tags": [
+"root"
+],
+"summary": "Health",
+"operationId": "health_health_get",
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+}
+}
+}
+},
+"/live": {
+"get": {
+"tags": [
+"root"
+],
+"summary": "Live",
+"operationId": "live_live_get",
+"responses": {
+"200": {
+"description": "Successful Response",
+"content": {
+"application/json": {
+"schema": {}
+}
+}
+}
+}
+}
+}
+},
+"components": {
+"schemas": {
+"AnalysisResult": {
+"properties": {
+"status": {
+"type": "string",
+"enum": [
+"healthy",
+"warning",
+"critical"
+],
+"title": "Status"
+},
+"score": {
+"type": "integer",
+"maximum": 100,
+"minimum": 0,
+"title": "Score"
+},
+"anomalies": {
+"items": {
+"type": "string"
+},
+"type": "array",
+"title": "Anomalies",
+"default": []
+},
+"recommendations": {
+"items": {
+"type": "string"
+},
+"type": "array",
+"title": "Recommendations",
+"default": []
+}
+},
+"type": "object",
+"required": [
+"status",
+"score"
+],
+"title": "AnalysisResult"
+},
+"AnalyzeRequest": {
+"properties": {
+"motor_id": {
+"type": "string",
+"title": "Motor Id"
+},
+"readings": {
+"additionalProperties": true,
+"type": "object",
+"title": "Readings"
+}
+},
+"type": "object",
+"required": [
+"motor_id",
+"readings"
+],
+"title": "AnalyzeRequest"
+},
+"AnalyzeResponse": {
+"properties": {
+"rule_status": {
+"type": "string",
+"title": "Rule Status"
+},
+"rule_score": {
+"type": "integer",
+"title": "Rule Score"
+},
+"ai_status": {
+"type": "string",
+"title": "Ai Status"
+},
+"explanation": {
+"type": "string",
+"title": "Explanation"
+},
+"recommendations": {
+"items": {
+"type": "string"
+},
+"type": "array",
+"title": "Recommendations"
+},
+"follow_up_questions": {
+"items": {
+"type": "string"
+},
+"type": "array",
+"title": "Follow Up Questions"
+}
+},
+"type": "object",
+"required": [
+"rule_status",
+"rule_score",
+"ai_status",
+"explanation",
+"recommendations",
+"follow_up_questions"
+],
+"title": "AnalyzeResponse"
+},
+"AssignSpecRequest": {
+"properties": {
+"spec_id": {
+"type": "string",
+"title": "Spec Id"
+}
+},
+"type": "object",
+"required": [
+"spec_id"
+],
+"title": "AssignSpecRequest"
+},
+"AuditLogOut": {
+"properties": {
+"id": {
+"type": "string",
+"title": "Id"
+},
+"action": {
+"type": "string",
+"title": "Action"
+},
+"user_id": {
+"type": "string",
+"title": "User Id"
+},
+"timestamp": {
+"type": "string",
+"format": "date-time",
+"title": "Timestamp"
+},
+"resource_type": {
+"type": "string",
+"title": "Resource Type"
+},
+"resource_id": {
+"type": "string",
+"title": "Resource Id"
+},
+"changes": {
+"additionalProperties": true,
+"type": "object",
+"title": "Changes"
+}
+},
+"type": "object",
+"required": [
+"id",
+"action",
+"user_id",
+"timestamp",
+"resource_type",
+"resource_id",
+"changes"
+],
+"title": "AuditLogOut"
+},
+"Body_upload_route_documents_upload_post": {
+"properties": {
+"file": {
+"type": "string",
+"contentMediaType": "application/octet-stream",
+"title": "File"
+},
+"manufacturer": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Manufacturer"
+},
+"model": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Model"
+}
+},
+"type": "object",
+"required": [
+"file"
+],
+"title": "Body_upload_route_documents_upload_post"
+},
+"DocumentMetadataUpdate": {
+"properties": {
+"manufacturer": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Manufacturer"
+},
+"model": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Model"
+},
+"filename": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Filename"
+}
+},
+"type": "object",
+"title": "DocumentMetadataUpdate"
+},
+"DocumentUploadResponse": {
+"properties": {
+"id": {
+"type": "string",
+"title": "Id"
+},
+"filename": {
+"type": "string",
+"title": "Filename"
+},
+"processed": {
+"type": "boolean",
+"title": "Processed"
+},
+"chunks_count": {
+"type": "integer",
+"title": "Chunks Count"
+},
+"is_duplicate": {
+"type": "boolean",
+"title": "Is Duplicate",
+"default": false
+}
+},
+"type": "object",
+"required": [
+"id",
+"filename",
+"processed",
+"chunks_count"
+],
+"title": "DocumentUploadResponse"
+},
+"HTTPValidationError": {
+"properties": {
+"detail": {
+"items": {
+"$ref": "#/components/schemas/ValidationError"
+},
+"type": "array",
+"title": "Detail"
+}
+},
+"type": "object",
+"title": "HTTPValidationError"
+},
+"InspectionCreate": {
+"properties": {
+"motor_id": {
+"type": "string",
+"title": "Motor Id"
+},
+"shift": {
+"type": "string",
+"enum": [
+"morning",
+"afternoon",
+"night"
+],
+"title": "Shift"
+},
+"readings": {
+"$ref": "#/components/schemas/ReadingsInput"
+}
+},
+"type": "object",
+"required": [
+"motor_id",
+"shift",
+"readings"
+],
+"title": "InspectionCreate"
+},
+"InspectionOut": {
+"properties": {
+"id": {
+"type": "string",
+"title": "Id"
+},
+"motor_id": {
+"type": "string",
+"title": "Motor Id"
+},
+"technician_id": {
+"type": "string",
+"title": "Technician Id"
+},
+"timestamp": {
+"type": "string",
+"format": "date-time",
+"title": "Timestamp"
+},
+"shift": {
+"type": "string",
+"title": "Shift"
+},
+"readings": {
+"$ref": "#/components/schemas/ReadingsInput"
+},
+"analysis": {
+"$ref": "#/components/schemas/AnalysisResult"
+}
+},
+"type": "object",
+"required": [
+"id",
+"motor_id",
+"technician_id",
+"timestamp",
+"shift",
+"readings",
+"analysis"
+],
+"title": "InspectionOut"
+},
+"LoginRequest": {
+"properties": {
+"email": {
+"type": "string",
+"format": "email",
+"title": "Email"
+},
+"password": {
+"type": "string",
+"title": "Password"
+}
+},
+"type": "object",
+"required": [
+"email",
+"password"
+],
+"title": "LoginRequest"
+},
+"MotorCreate": {
+"properties": {
+"name": {
+"type": "string",
+"minLength": 1,
+"title": "Name"
+},
+"facility_id": {
+"type": "string",
+"title": "Facility Id"
+},
+"machine_id": {
+"type": "string",
+"title": "Machine Id"
+},
+"spec_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Spec Id"
+}
+},
+"type": "object",
+"required": [
+"name",
+"facility_id",
+"machine_id"
+],
+"title": "MotorCreate"
+},
+"MotorOut": {
+"properties": {
+"id": {
+"type": "string",
+"title": "Id"
+},
+"name": {
+"type": "string",
+"title": "Name"
+},
+"facility_id": {
+"type": "string",
+"title": "Facility Id"
+},
+"machine_id": {
+"type": "string",
+"title": "Machine Id"
+},
+"spec_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Spec Id"
+},
+"status": {
+"type": "string",
+"title": "Status"
+},
+"created_at": {
+"type": "string",
+"format": "date-time",
+"title": "Created At"
+}
+},
+"type": "object",
+"required": [
+"id",
+"name",
+"facility_id",
+"machine_id",
+"spec_id",
+"status",
+"created_at"
+],
+"title": "MotorOut"
+},
+"MotorSpecCreate": {
+"properties": {
+"manufacturer": {
+"type": "string",
+"title": "Manufacturer"
+},
+"model": {
+"type": "string",
+"title": "Model"
+},
+"normalized": {
+"$ref": "#/components/schemas/MotorSpecNormalized"
+},
+"raw_document_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Raw Document Id"
+},
+"confidence": {
+"type": "number",
+"title": "Confidence",
+"default": 0
+}
+},
+"type": "object",
+"required": [
+"manufacturer",
+"model",
+"normalized"
+],
+"title": "MotorSpecCreate"
+},
+"MotorSpecNormalized": {
+"properties": {
+"temperature": {
+"additionalProperties": true,
+"type": "object",
+"title": "Temperature"
+},
+"vibration": {
+"additionalProperties": true,
+"type": "object",
+"title": "Vibration"
+},
+"rpm": {
+"type": "number",
+"title": "Rpm"
+}
+},
+"type": "object",
+"required": [
+"temperature",
+"vibration",
+"rpm"
+],
+"title": "MotorSpecNormalized"
+},
+"MotorSpecOut": {
+"properties": {
+"id": {
+"type": "string",
+"title": "Id"
+},
+"manufacturer": {
+"type": "string",
+"title": "Manufacturer"
+},
+"model": {
+"type": "string",
+"title": "Model"
+},
+"normalized": {
+"$ref": "#/components/schemas/MotorSpecNormalized"
+},
+"raw_document_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Raw Document Id"
+},
+"confidence": {
+"type": "number",
+"title": "Confidence"
+},
+"created_at": {
+"type": "string",
+"format": "date-time",
+"title": "Created At"
+}
+},
+"type": "object",
+"required": [
+"id",
+"manufacturer",
+"model",
+"normalized",
+"raw_document_id",
+"confidence",
+"created_at"
+],
+"title": "MotorSpecOut"
+},
+"MotorUpdate": {
+"properties": {
+"name": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Name"
+},
+"facility_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Facility Id"
+},
+"machine_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Machine Id"
+},
+"spec_id": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Spec Id"
+},
+"status": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Status"
+}
+},
+"type": "object",
+"title": "MotorUpdate"
+},
+"ReadingsInput": {
+"properties": {
+"temperature": {
+"type": "number",
+"maximum": 200,
+"minimum": 0,
+"title": "Temperature"
+},
+"vibration": {
+"type": "number",
+"maximum": 10,
+"minimum": 0,
+"title": "Vibration"
+},
+"noise": {
+"type": "string",
+"enum": [
+"quiet",
+"moderate",
+"loud"
+],
+"title": "Noise"
+},
+"condition": {
+"type": "string",
+"enum": [
+"clean",
+"dusty",
+"wet",
+"corroded"
+],
+"title": "Condition"
+}
+},
+"type": "object",
+"required": [
+"temperature",
+"vibration",
+"noise",
+"condition"
+],
+"title": "ReadingsInput"
+},
+"SpecParseRequest": {
+"properties": {
+"document_id": {
+"type": "string",
+"title": "Document Id"
+},
+"manufacturer_hint": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Manufacturer Hint"
+},
+"model_hint": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "null"
+}
+],
+"title": "Model Hint"
+}
+},
+"type": "object",
+"required": [
+"document_id"
+],
+"title": "SpecParseRequest"
+},
+"SpecParseResponse": {
+"properties": {
+"spec_id": {
+"type": "string",
+"title": "Spec Id"
+},
+"manufacturer": {
+"type": "string",
+"title": "Manufacturer"
+},
+"model": {
+"type": "string",
+"title": "Model"
+},
+"normalized": {
+"additionalProperties": true,
+"type": "object",
+"title": "Normalized"
+},
+"confidence": {
+"type": "number",
+"title": "Confidence"
+},
+"validated": {
+"type": "boolean",
+"title": "Validated"
+}
+},
+"type": "object",
+"required": [
+"spec_id",
+"manufacturer",
+"model",
+"normalized",
+"confidence",
+"validated"
+],
+"title": "SpecParseResponse"
+},
+"Token": {
+"properties": {
+"access_token": {
+"type": "string",
+"title": "Access Token"
+},
+"token_type": {
+"type": "string",
+"title": "Token Type"
+}
+},
+"type": "object",
+"required": [
+"access_token",
+"token_type"
+],
+"title": "Token"
+},
+"ValidationError": {
+"properties": {
+"loc": {
+"items": {
+"anyOf": [
+{
+"type": "string"
+},
+{
+"type": "integer"
+}
+]
+},
+"type": "array",
+"title": "Location"
+},
+"msg": {
+"type": "string",
+"title": "Message"
+},
+"type": {
+"type": "string",
+"title": "Error Type"
+},
+"input": {
+"title": "Input"
+},
+"ctx": {
+"type": "object",
+"title": "Context"
+}
+},
+"type": "object",
+"required": [
+"loc",
+"msg",
+"type"
+],
+"title": "ValidationError"
+}
+},
+"securitySchemes": {
+"HTTPBearer": {
+"type": "http",
+"scheme": "bearer"
+}
+}
+}
+}

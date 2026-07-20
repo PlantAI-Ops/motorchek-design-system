@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MOCK_SPECS } from "@/data/mockSpecs";
-import { ArrowLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { createMotor } from "@/lib/api/motors";
+import { listSpecs } from "@/lib/api/specs";
 
 const motorSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  facility_id: z.string().trim().min(1, "Facility ID is required").max(50, "Facility ID must be less than 50 characters"),
-  machine_id: z.string().trim().min(1, "Machine ID is required").max(50, "Machine ID must be less than 50 characters"),
+  facility_id: z.string().trim().min(1, "Facility is required").max(50, "Facility must be less than 50 characters"),
+  machine_id: z.string().trim().min(1, "Machine is required").max(50, "Machine must be less than 50 characters"),
   spec_id: z.string().optional(),
 });
 
@@ -26,6 +29,11 @@ export default function MotorCreatePage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { data: specs = [], isLoading: specsLoading } = useQuery({
+    queryKey: ["specs"],
+    queryFn: () => listSpecs(0, 100),
+  });
+
   const form = useForm<MotorFormValues>({
     resolver: zodResolver(motorSchema),
     defaultValues: { name: "", facility_id: "", machine_id: "", spec_id: "" },
@@ -33,12 +41,19 @@ export default function MotorCreatePage() {
 
   async function onSubmit(values: MotorFormValues) {
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 600));
-    const newId = `m${Date.now()}`;
-    setIsSubmitting(false);
-    toast.success("Motor created", { description: `${values.name} has been registered.` });
-    navigate(`/motors/${newId}`);
+    try {
+      const motor = await createMotor({
+        name: values.name,
+        facility_id: values.facility_id,
+        machine_id: values.machine_id,
+        spec_id: values.spec_id || undefined,
+      });
+      toast.success("Motor created", { description: `${motor.name} has been registered.` });
+      navigate(`/motors/${motor.id}`);
+    } catch (err) {
+      toast.error("Failed to create motor", { description: err instanceof Error ? err.message : "Unknown error" });
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -75,7 +90,7 @@ export default function MotorCreatePage() {
                   name="facility_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Facility ID</FormLabel>
+                      <FormLabel>Facility</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. FAC-001" {...field} />
                       </FormControl>
@@ -89,7 +104,7 @@ export default function MotorCreatePage() {
                   name="machine_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Machine ID</FormLabel>
+                      <FormLabel>Machine</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. MCH-042" {...field} />
                       </FormControl>
@@ -107,11 +122,11 @@ export default function MotorCreatePage() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a spec…" />
+                            {specsLoading ? <Skeleton className="h-4 w-24" /> : <SelectValue placeholder="Select a spec…" />}
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {MOCK_SPECS.map((spec) => (
+                          {specs.map((spec) => (
                             <SelectItem key={spec.id} value={spec.id}>
                               {spec.manufacturer} / {spec.model}
                             </SelectItem>

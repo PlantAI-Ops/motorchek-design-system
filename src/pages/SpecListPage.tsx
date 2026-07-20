@@ -1,14 +1,16 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Plus } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SpecCard } from "@/components/SpecCard";
 import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/components/AuthProvider";
 import { useDebounce } from "@/hooks/useDebounce";
-import { MOCK_SPECS } from "@/data/mockSpecs";
+import { listSpecs } from "@/lib/api/specs";
 
 export default function SpecListPage() {
   const navigate = useNavigate();
@@ -20,13 +22,10 @@ export default function SpecListPage() {
 
   const canCreate = user?.role === "admin" || user?.role === "supervisor";
 
-  const filtered = useMemo(() => {
-    return MOCK_SPECS.filter((spec) => {
-      const matchMfg = !debouncedManufacturer || spec.manufacturer.toLowerCase().includes(debouncedManufacturer.toLowerCase());
-      const matchModel = !debouncedModel || spec.model.toLowerCase().includes(debouncedModel.toLowerCase());
-      return matchMfg && matchModel;
-    });
-  }, [debouncedManufacturer, debouncedModel]);
+  const { data: specs = [], isLoading } = useQuery({
+    queryKey: ["specs", debouncedManufacturer, debouncedModel],
+    queryFn: () => listSpecs(debouncedManufacturer || undefined, debouncedModel || undefined, 100),
+  });
 
   return (
     <AppLayout title="Specs">
@@ -59,18 +58,23 @@ export default function SpecListPage() {
           )}
         </div>
 
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40 w-full" />)}
+          </div>
+        ) : specs.length === 0 ? (
           <EmptyState title="No specs found" description="Try adjusting your search filters." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((spec) => (
+            {specs.map((spec) => (
               <SpecCard
                 key={spec.id}
+                id={spec.id}
                 manufacturer={spec.manufacturer}
                 model={spec.model}
                 confidence={spec.confidence}
-                linkedMotorCount={spec.linkedMotorIds.length}
-                createdAt={spec.createdAt}
+                normalized={spec.normalized}
+                createdAt={spec.created_at}
                 onClick={() => navigate(`/specs/${spec.id}`)}
               />
             ))}

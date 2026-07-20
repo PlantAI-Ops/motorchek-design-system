@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(curl -s http://localhost:8000/api/v1/motors -H \"Authorization: Bearer $\\(cat C:/Users/samil/Documents/GitHub/motorchek-design-system/.env)"
+    ]
+  }
+}

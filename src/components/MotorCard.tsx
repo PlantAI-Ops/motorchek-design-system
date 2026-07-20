@@ -5,10 +5,12 @@ interface MotorCardProps {
   name: string;
   facility: string;
   machine: string;
+  model: string;
+  manufacturer: string;
   status: StatusVariant;
-  specName?: string;
-  lastInspection?: string;
-  score?: number;
+  lastInspectionDate?: string;
+  lastInspectionScore?: number;
+  lastInspectionStatus?: StatusVariant;
   onClick?: () => void;
 }
 
@@ -20,14 +22,24 @@ const borderColorMap: Record<StatusVariant, string> = {
   active: "border-l-primary",
 };
 
+const statusDotColor: Record<StatusVariant, string> = {
+  healthy: "bg-status-healthy",
+  warning: "bg-status-warning",
+  critical: "bg-status-critical status-dot-pulse",
+  unknown: "bg-muted-foreground",
+  active: "bg-primary",
+};
+
 export function MotorCard({
   name,
   facility,
   machine,
+  model,
+  manufacturer,
   status,
-  specName,
-  lastInspection,
-  score,
+  lastInspectionDate,
+  lastInspectionScore,
+  lastInspectionStatus,
   onClick,
 }: MotorCardProps) {
   return (
@@ -43,29 +55,49 @@ export function MotorCard({
         <span
           className={cn(
             "w-2 h-2 rounded-full",
-            status === "healthy" && "bg-status-healthy",
-            status === "warning" && "bg-status-warning",
-            status === "critical" && "bg-status-critical status-dot-pulse",
-            status === "unknown" && "bg-muted-foreground",
+            statusDotColor[status]
           )}
         />
         <h3 className="text-md font-semibold text-foreground">{name}</h3>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-3">
-        {facility} · {machine}
+      <p className="text-sm text-muted-foreground mb-1">
+        {facility}
       </p>
 
-      {specName && (
-        <span className="inline-block text-xs font-medium bg-surface-raised text-muted-foreground px-2 py-1 rounded mb-3">
-          {specName}
-        </span>
-      )}
+      <p className="text-sm text-muted-foreground mb-2">
+        {machine}
+      </p>
+
+      <p className="text-sm text-muted-foreground mb-2">
+        {model} · {manufacturer}
+      </p>
 
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{lastInspection ? `Last: ${lastInspection}` : "No inspections"}</span>
         <div className="flex items-center gap-2">
-          {score !== undefined && <span>Score: {score}</span>}
+          <span>
+            {lastInspectionDate
+              ? `Last: ${lastInspectionDate}`
+              : "No inspections"}
+          </span>
+          {lastInspectionStatus && (
+            <>
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  statusDotColor[lastInspectionStatus]
+                )}
+              />
+              <StatusBadge variant={lastInspectionStatus}>
+                {lastInspectionStatus.charAt(0).toUpperCase() + lastInspectionStatus.slice(1)}
+              </StatusBadge>
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {lastInspectionScore !== undefined && (
+            <span>Score: {lastInspectionScore}</span>
+          )}
           <StatusBadge variant={status}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </StatusBadge>

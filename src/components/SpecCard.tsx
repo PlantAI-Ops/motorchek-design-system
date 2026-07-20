@@ -2,10 +2,15 @@ import { cn } from "@/lib/utils";
 import { Cpu } from "lucide-react";
 
 interface SpecCardProps {
+  id: string;
   manufacturer: string;
   model: string;
   confidence: number;
-  linkedMotorCount: number;
+  normalized: {
+    temperature: { min: number; max: number };
+    vibration: { min: number; max: number };
+    rpm: number;
+  };
   createdAt: string;
   onClick?: () => void;
 }
@@ -16,7 +21,7 @@ function confidenceColor(confidence: number) {
   return "text-status-critical";
 }
 
-export function SpecCard({ manufacturer, model, confidence, linkedMotorCount, createdAt, onClick }: SpecCardProps) {
+export function SpecCard({ id, manufacturer, model, confidence, normalized, createdAt, onClick }: SpecCardProps) {
   return (
     <div
       onClick={onClick}
@@ -33,10 +38,12 @@ export function SpecCard({ manufacturer, model, confidence, linkedMotorCount, cr
 
       <div className="space-y-1 text-sm text-muted-foreground">
         <p>
-          Confidence: <span className={cn("font-semibold", confidenceColor(confidence))}>{confidence}%</span>
+          Confidence: <span className={cn("font-semibold", confidenceColor(Math.round(confidence * 100)))}>{Math.round(confidence * 100)}%</span>
         </p>
-        <p>Linked motors: {linkedMotorCount}</p>
-        <p>Created: {createdAt}</p>
+        <p>Temp: {normalized.temperature.min}–{normalized.temperature.max}°C</p>
+        <p>Vib: {normalized.vibration.min}–{normalized.vibration.max} mm/s</p>
+        <p>RPM: {normalized.rpm}</p>
+        <p>Created: {new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
       </div>
     </div>
   );

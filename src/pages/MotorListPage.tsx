@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Plus, Filter } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { MotorCard } from "@/components/MotorCard";
@@ -13,8 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/components/AuthProvider";
-import { MOCK_MOTORS } from "@/data/mockMotors";
+import { listMotors } from "@/lib/api/motors";
 import type { StatusVariant } from "@/components/StatusBadge";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -27,6 +29,11 @@ export default function MotorListPage() {
   const debouncedSearch = useDebounce(searchInput, 300);
   const statusFilter = (searchParams.get("status") ?? "all") as StatusVariant | "all";
 
+  const { data: motors = [], isLoading } = useQuery({
+    queryKey: ["motors"],
+    queryFn: () => listMotors(0, 100),
+  });
+
   const setStatusFilter = (value: string) => {
     const params = new URLSearchParams(searchParams);
     if (value === "all") params.delete("status");
@@ -34,22 +41,22 @@ export default function MotorListPage() {
     setSearchParams(params, { replace: true });
   };
 
-  const filteredMotors = useMemo(() => {
-    let motors = MOCK_MOTORS;
+  const filteredMotors = (() => {
+    let result = motors;
     if (statusFilter !== "all") {
-      motors = motors.filter((m) => m.status === statusFilter);
+      result = result.filter((m) => m.status === statusFilter);
     }
     if (debouncedSearch.trim()) {
       const q = debouncedSearch.toLowerCase();
-      motors = motors.filter(
+      result = result.filter(
         (m) =>
           m.name.toLowerCase().includes(q) ||
           m.facility.toLowerCase().includes(q) ||
           m.machine.toLowerCase().includes(q)
       );
     }
-    return motors;
-  }, [statusFilter, debouncedSearch]);
+    return result;
+  })();
 
   return (
     <AppLayout title="Motors">
@@ -87,7 +94,19 @@ export default function MotorListPage() {
       </div>
 
       {/* Grid */}
-      {filteredMotors.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="rounded-xl border bg-card">
+              <div className="p-5 space-y-3">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredMotors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredMotors.map((motor) => (
             <MotorCard
@@ -95,10 +114,12 @@ export default function MotorListPage() {
               name={motor.name}
               facility={motor.facility}
               machine={motor.machine}
-              status={motor.status}
-              specName={motor.specName}
-              lastInspection={motor.lastInspection}
-              score={motor.score}
+              model={motor.model}
+              manufacturer={motor.manufacturer}
+              status={(motor.status as StatusVariant) ?? "unknown"}
+              lastInspectionDate={motor.last_inspection_date}
+              lastInspectionScore={motor.last_inspection_score}
+              lastInspectionStatus={(motor.last_inspection_status as StatusVariant) ?? undefined}
               onClick={() => navigate(`/motors/${motor.id}`)}
             />
           ))}

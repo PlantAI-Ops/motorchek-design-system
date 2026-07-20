@@ -92,15 +92,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-8 p-4 rounded-lg bg-surface-raised border border-border">
-            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Demo accounts</p>
-            <div className="space-y-1 text-sm text-muted-foreground">
-              <p><span className="font-mono text-foreground">admin@motorchek.io</span> / admin123</p>
-              <p><span className="font-mono text-foreground">supervisor@motorchek.io</span> / super123</p>
-              <p><span className="font-mono text-foreground">tech@motorchek.io</span> / tech123</p>
-            </div>
           </div>
-        </div>
       </div>
     </div>
   );

@@ -4,35 +4,38 @@ import { MotorCard } from "@/components/MotorCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Cpu, CheckCircle, Wrench, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MOCK_MOTORS } from "@/data/mockMotors";
-
-const mockMotors = [
-  { name: "Pump Motor A1", facility: "FAC-001", machine: "MCH-042", status: "healthy" as const, specName: "ABB M3BP-160", lastInspection: "2h ago", score: 92 },
-  { name: "Compressor Drive B3", facility: "FAC-001", machine: "MCH-018", status: "warning" as const, specName: "Siemens 1LE1", lastInspection: "6h ago", score: 65 },
-  { name: "Conveyor Motor C2", facility: "FAC-002", machine: "MCH-091", status: "critical" as const, specName: "WEG W22", lastInspection: "1d ago", score: 34 },
-  { name: "Fan Motor D1", facility: "FAC-002", machine: "MCH-055", status: "healthy" as const, lastInspection: "4h ago", score: 88 },
-  { name: "Mixer Motor E4", facility: "FAC-003", machine: "MCH-112", status: "unknown" as const },
-  { name: "Agitator Motor F2", facility: "FAC-001", machine: "MCH-073", status: "warning" as const, specName: "ABB M3AA-100", lastInspection: "12h ago", score: 58 },
-];
-
-const recentInspections = [
-  { motor: "Pump Motor A1", timestamp: "2026-04-10 09:14", shift: "Morning", temp: 72, vib: 1.2, status: "healthy" as const, score: 92 },
-  { motor: "Compressor Drive B3", timestamp: "2026-04-10 06:30", shift: "Morning", temp: 82, vib: 2.1, status: "warning" as const, score: 65 },
-  { motor: "Conveyor Motor C2", timestamp: "2026-04-09 14:22", shift: "Afternoon", temp: 95, vib: 4.8, status: "critical" as const, score: 34 },
-  { motor: "Fan Motor D1", timestamp: "2026-04-10 07:45", shift: "Morning", temp: 68, vib: 0.9, status: "healthy" as const, score: 88 },
-  { motor: "Agitator Motor F2", timestamp: "2026-04-09 22:10", shift: "Night", temp: 79, vib: 2.5, status: "warning" as const, score: 58 },
-];
+import { useQuery } from "@tanstack/react-query";
+import { listMotors } from "@/lib/api/motors";
+import type { StatusVariant } from "@/components/StatusBadge";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+
+  const { data: motors = [], isLoading } = useQuery({
+    queryKey: ["motors"],
+    queryFn: () => listMotors(0, 100),
+  });
+
+  const attentionMotors = motors.filter(
+    (m) => m.status === "warning" || m.status === "critical"
+  );
+
+  const recentInspections = [
+    { motor: "Pump Motor A1", timestamp: "2026-04-10 09:14", shift: "Morning", temp: 72, vib: 1.2, status: "healthy" as const, score: 92 },
+    { motor: "Compressor Drive B3", timestamp: "2026-04-10 06:30", shift: "Morning", temp: 82, vib: 2.1, status: "warning" as const, score: 65 },
+    { motor: "Conveyor Motor C2", timestamp: "2026-04-09 14:22", shift: "Afternoon", temp: 95, vib: 4.8, status: "critical" as const, score: 34 },
+    { motor: "Fan Motor D1", timestamp: "2026-04-10 07:45", shift: "Morning", temp: 68, vib: 0.9, status: "healthy" as const, score: 88 },
+    { motor: "Agitator Motor F2", timestamp: "2026-04-09 22:10", shift: "Night", temp: 79, vib: 2.5, status: "warning" as const, score: 58 },
+  ];
+
   return (
     <AppLayout title="Dashboard">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KpiCard title="Total Motors" value={6} subtitle="Across 3 facilities" icon={Cpu} />
-        <KpiCard title="Healthy" value="3" subtitle="50% of fleet" icon={CheckCircle} />
+        <KpiCard title="Total Motors" value={motors.length} subtitle="Across facilities" icon={Cpu} />
+        <KpiCard title="Healthy" value={motors.filter(m => m.status === "healthy").length} subtitle={`${motors.length ? Math.round((motors.filter(m => m.status === "healthy").length / motors.length) * 100) : 0}% of fleet`} icon={CheckCircle} />
         <KpiCard title="Inspections Today" value={4} subtitle="Morning shift" icon={Wrench} />
-        <KpiCard title="Pending Alerts" value={3} subtitle="1 critical · 2 warnings" icon={AlertTriangle} />
+        <KpiCard title="Pending Alerts" value={attentionMotors.length} subtitle={`${motors.filter(m => m.status === "critical").length} critical · ${motors.filter(m => m.status === "warning").length} warnings`} icon={AlertTriangle} />
       </div>
 
       {/* Recent Inspections */}
@@ -98,23 +101,39 @@ export default function DashboardPage() {
       {/* Motors Requiring Attention */}
       <section>
         <h2 className="text-lg font-semibold text-foreground mb-4">Motors Requiring Attention</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {MOCK_MOTORS
-            .filter((m) => m.status === "warning" || m.status === "critical")
-            .map((motor) => (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card">
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+                  <div className="h-3 bg-muted animate-pulse rounded w-1/2" />
+                  <div className="h-3 bg-muted animate-pulse rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : attentionMotors.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {attentionMotors.map((motor) => (
               <MotorCard
                 key={motor.id}
                 name={motor.name}
                 facility={motor.facility}
                 machine={motor.machine}
-                status={motor.status}
-                specName={motor.specName}
-                lastInspection={motor.lastInspection}
-                score={motor.score}
+                model={motor.model}
+                manufacturer={motor.manufacturer}
+                status={(motor.status as StatusVariant) ?? "unknown"}
+                lastInspectionDate={motor.last_inspection_date}
+                lastInspectionScore={motor.last_inspection_score}
+                lastInspectionStatus={(motor.last_inspection_status as StatusVariant) ?? undefined}
                 onClick={() => navigate(`/motors/${motor.id}`)}
               />
             ))}
-        </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground">No motors requiring attention.</p>
+        )}
       </section>
     </AppLayout>
   );

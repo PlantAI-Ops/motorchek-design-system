@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Hash, Activity, Thermometer, Volume2, Brain } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Calendar, Hash, Activity, MapPin, Box, Factory, Brain } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
 import { AppLayout } from "@/components/AppLayout";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,8 +9,10 @@ import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { MOCK_MOTORS, MOCK_INSPECTIONS } from "@/data/mockMotors";
+import { getMotor } from "@/lib/api/motors";
+import type { StatusVariant } from "@/components/StatusBadge";
 
 const statusBorderMap: Record<string, string> = {
   healthy: "border-l-status-healthy",
@@ -22,11 +25,18 @@ export default function MotorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const motor = MOCK_MOTORS.find((m) => m.id === id);
-  const inspections = useMemo(
-    () => MOCK_INSPECTIONS.filter((i) => i.motorId === id).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
-    [id]
-  );
+  const { data: motor, isLoading } = useQuery({
+    queryKey: ["motor", id],
+    queryFn: () => getMotor(id!),
+    enabled: !!id,
+  });
+
+  // Mock inspection data for now — to be replaced with real inspections API
+  const inspections = [
+    { id: "i1", motorId: id, timestamp: "2026-04-10T09:14:00Z", shift: "Day", temperature: 72, vibration: 2.1, noise: 68, condition: "Normal", status: "healthy", score: 88 },
+    { id: "i2", motorId: id, timestamp: "2026-04-08T14:30:00Z", shift: "Day", temperature: 74, vibration: 2.3, noise: 70, condition: "Normal", status: "healthy", score: 85 },
+    { id: "i3", motorId: id, timestamp: "2026-04-05T22:10:00Z", shift: "Night", temperature: 71, vibration: 2.0, noise: 67, condition: "Normal", status: "healthy", score: 90 },
+  ];
 
   const chartData = useMemo(
     () =>
@@ -39,6 +49,18 @@ export default function MotorDetailPage() {
         })),
     [inspections]
   );
+
+  if (isLoading) {
+    return (
+      <AppLayout title="Loading…">
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (!motor) {
     return (
@@ -65,30 +87,79 @@ export default function MotorDetailPage() {
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         {/* Motor Info — 60% */}
-        <Card className={cn("lg:col-span-3 border-l-4", statusBorderMap[motor.status])}>
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <StatusBadge variant={motor.status}>
-                {motor.status.charAt(0).toUpperCase() + motor.status.slice(1)}
-              </StatusBadge>
-              <CardTitle className="text-lg">{motor.name}</CardTitle>
+        <Card className={cn("lg:col-span-3 border-l-4", statusBorderMap[motor.status] ?? statusBorderMap.unknown)}>
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2 mb-3">
+              <span
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full shrink-0",
+                  motor.status === "healthy" && "bg-status-healthy",
+                  motor.status === "warning" && "bg-status-warning",
+                  motor.status === "critical" && "bg-status-critical",
+                  motor.status === "active" && "bg-primary",
+                )}
+              />
+              <CardTitle className="text-xl">{motor.name}</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
-              <span>Facility: <span className="font-mono text-foreground">{motor.facility}</span></span>
-              <span>Machine: <span className="font-mono text-foreground">{motor.machine}</span></span>
+          <CardContent className="space-y-4">
+            {/* Status row */}
+            <div className="flex items-center gap-3">
+              <StatusBadge variant={(motor.status as StatusVariant) ?? "unknown"}>
+                {motor.status.charAt(0).toUpperCase() + motor.status.slice(1)}
+              </StatusBadge>
+              {motor.last_inspection_date && (
+                <span className="text-sm text-muted-foreground">
+                  Last inspection: {motor.last_inspection_date}
+                </span>
+              )}
             </div>
-            {motor.specName ? (
-              <div className="bg-surface-raised rounded-md px-4 py-3 text-sm">
-                <span className="text-muted-foreground">Spec:</span>{" "}
-                <span className="font-medium text-foreground">{motor.specManufacturer} / {motor.specName}</span>
-                {motor.specConfidence && (
-                  <span className="ml-2 text-xs text-muted-foreground">— Confidence: {motor.specConfidence}%</span>
+
+            {/* Details grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Facility</p>
+                  <p className="text-sm font-medium text-foreground">{motor.facility_id}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Activity className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Machine</p>
+                  <p className="text-sm font-medium text-foreground">{motor.machine_id}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Box className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Model</p>
+                  <p className="text-sm font-medium text-foreground">{motor.model}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Factory className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Manufacturer</p>
+                  <p className="text-sm font-medium text-foreground">{motor.manufacturer}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Last inspection score */}
+            {motor.last_inspection_score !== undefined && (
+              <div className="flex items-center gap-3 bg-surface-raised rounded-md px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Last Inspection Score</p>
+                  <p className="text-2xl font-bold text-foreground">{motor.last_inspection_score}</p>
+                </div>
+                {motor.last_inspection_status && (
+                  <StatusBadge variant={(motor.last_inspection_status as StatusVariant) ?? "unknown"} className="ml-auto">
+                    {motor.last_inspection_status.charAt(0).toUpperCase() + motor.last_inspection_status.slice(1)}
+                  </StatusBadge>
                 )}
               </div>
-            ) : (
-              <Button variant="outline" size="sm">Assign Spec</Button>
             )}
           </CardContent>
         </Card>
@@ -96,33 +167,66 @@ export default function MotorDetailPage() {
         {/* Quick Stats — 40% */}
         <Card className="lg:col-span-2">
           <CardContent className="pt-6 space-y-4">
+            {motor.last_inspection_date && (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Last Inspection Date</p>
+                  <p className="text-sm font-semibold text-foreground">{motor.last_inspection_date}</p>
+                </div>
+              </div>
+            )}
+            {motor.last_inspection_score !== undefined && (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Last Score</p>
+                  <p className="text-sm font-semibold text-foreground">{motor.last_inspection_score}</p>
+                </div>
+              </div>
+            )}
+            {motor.total_inspections !== undefined && (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
+                  <Hash className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total Inspections</p>
+                  <p className="text-sm font-semibold text-foreground">{motor.total_inspections}</p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-primary" />
+                <Factory className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Last Inspection</p>
-                <p className="text-sm font-semibold text-foreground">{motor.lastInspection ?? "None"}</p>
+                <p className="text-xs text-muted-foreground">Manufacturer</p>
+                <p className="text-sm font-semibold text-foreground">{motor.manufacturer}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
-                <Activity className="w-4 h-4 text-primary" />
+                <Box className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Last Score</p>
-                <p className="text-sm font-semibold text-foreground">{motor.score ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">Model</p>
+                <p className="text-sm font-semibold text-foreground">{motor.model}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center">
-                <Hash className="w-4 h-4 text-primary" />
+            {motor.spec_id && (
+              <div className="bg-surface-raised rounded-md px-4 py-3 text-sm">
+                <span className="text-muted-foreground">Spec:</span>{" "}
+                <span className="font-medium text-foreground">{motor.spec_id}</span>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Total Inspections</p>
-                <p className="text-sm font-semibold text-foreground">{motor.totalInspections}</p>
-              </div>
-            </div>
+            )}
+            {!motor.spec_id && (
+              <Button variant="outline" size="sm">Assign Spec</Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -134,7 +238,7 @@ export default function MotorDetailPage() {
             <CardTitle className="text-md">Inspection Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[280px] lg:h-[280px] h-[200px]">
+            <div className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -175,7 +279,6 @@ export default function MotorDetailPage() {
                     <TableHead>Shift</TableHead>
                     <TableHead className="text-right">Temp (°C)</TableHead>
                     <TableHead className="text-right">Vibration</TableHead>
-                    <TableHead className="text-right">Noise (dB)</TableHead>
                     <TableHead>Condition</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Score</TableHead>
@@ -193,10 +296,9 @@ export default function MotorDetailPage() {
                       <TableCell>{insp.shift}</TableCell>
                       <TableCell className="text-right font-mono">{insp.temperature}</TableCell>
                       <TableCell className="text-right font-mono">{insp.vibration}</TableCell>
-                      <TableCell className="text-right font-mono">{insp.noise}</TableCell>
                       <TableCell className="text-sm">{insp.condition}</TableCell>
                       <TableCell>
-                        <StatusBadge variant={insp.status}>
+                        <StatusBadge variant={insp.status as StatusVariant}>
                           {insp.status.charAt(0).toUpperCase() + insp.status.slice(1)}
                         </StatusBadge>
                       </TableCell>
