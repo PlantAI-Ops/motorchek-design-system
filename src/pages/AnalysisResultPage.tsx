@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MOCK_MOTORS } from "@/data/mockMotors";
+import { useChat } from "@/components/chat";
 
 const MOCK_ANALYSIS = {
   ruleEngine: { status: "warning" as const, score: 65 },
@@ -34,6 +35,12 @@ export default function AnalysisResultPage() {
   const { motorId } = useParams<{ motorId: string }>();
   const navigate = useNavigate();
   const [isRerunning, setIsRerunning] = useState(false);
+  const { setCurrentMotor } = useChat();
+
+  useEffect(() => {
+    if (motorId) setCurrentMotor(motorId);
+    return () => setCurrentMotor(null);
+  }, [motorId, setCurrentMotor]);
 
   const motor = MOCK_MOTORS.find((m) => m.id === motorId);
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Brain, Plus } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { MOCK_MOTORS, MOCK_INSPECTIONS } from "@/data/mockMotors";
+import { useChat } from "@/components/chat";
 
 const ROWS_PER_PAGE = 20;
 
@@ -17,6 +18,12 @@ export default function InspectionHistoryPage() {
   const { motorId } = useParams<{ motorId: string }>();
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
+  const { setCurrentMotor } = useChat();
+
+  useEffect(() => {
+    if (motorId) setCurrentMotor(motorId);
+    return () => setCurrentMotor(null);
+  }, [motorId, setCurrentMotor]);
 
   const motor = MOCK_MOTORS.find((m) => m.id === motorId);
   const inspections = useMemo(

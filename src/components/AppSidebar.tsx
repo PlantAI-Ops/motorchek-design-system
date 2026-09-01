@@ -174,7 +174,7 @@ export function AppSidebar() {
 
       <aside
         className={cn(
-          "hidden lg:flex flex-col border-r border-sidebar-border bg-sidebar shrink-0 transition-all duration-300 relative",
+          "hidden lg:flex flex-col h-full border-r border-sidebar-border bg-sidebar shrink-0 transition-all duration-300 relative",
           collapsed ? "w-16" : "w-60"
         )}
       >
@@ -182,7 +182,7 @@ export function AppSidebar() {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "absolute bottom-20 w-6 h-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-foreground",
+            "absolute bottom-[200px] w-6 h-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-foreground",
             collapsed ? "left-[52px]" : "left-[228px]"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}

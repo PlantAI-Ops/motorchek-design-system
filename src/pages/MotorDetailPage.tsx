@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Hash, Activity, Thermometer, Volume2, Brain } from "lucide-react";
+import { ArrowLeft, Calendar, Hash, Activity, Thermometer, Volume2, Brain, MessageSquare } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from "recharts";
 import { AppLayout } from "@/components/AppLayout";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { MOCK_MOTORS, MOCK_INSPECTIONS } from "@/data/mockMotors";
+import { useChat } from "@/components/chat";
 
 const statusBorderMap: Record<string, string> = {
   healthy: "border-l-status-healthy",
@@ -21,6 +22,12 @@ const statusBorderMap: Record<string, string> = {
 export default function MotorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { setCurrentMotor, openChat } = useChat();
+
+  useEffect(() => {
+    if (id) setCurrentMotor(id);
+    return () => setCurrentMotor(null);
+  }, [id, setCurrentMotor]);
 
   const motor = MOCK_MOTORS.find((m) => m.id === id);
   const inspections = useMemo(
@@ -72,6 +79,15 @@ export default function MotorDetailPage() {
                 {motor.status.charAt(0).toUpperCase() + motor.status.slice(1)}
               </StatusBadge>
               <CardTitle className="text-lg">{motor.name}</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 ml-auto"
+                onClick={openChat}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                Ask AI
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
